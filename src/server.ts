@@ -23,3 +23,25 @@ app.post('/create', async (request: FastifyRequest, reply: FastifyReply) => {
     });
     reply.send('Urso created')
 });
+
+app.get('/ursos', async (request: FastifyRequest, reply: FastifyReply) => {
+    const ursos = await prisma.urso.findMany();
+    reply.send(ursos)
+})
+
+app.get('/ursos/search', async (request: FastifyRequest, reply: FastifyReply) => {
+    const { query } = request.query as { query: string };
+    try {
+        const ursos = await prisma.urso.findMany({
+            where: {
+                OR: [
+                    { name: { contains: query, mode: 'insensitive' } },
+                    { description: { contains: query, mode: 'insensitive' } },
+                ],
+            },
+        });
+        reply.send(ursos);
+    } catch (error) {
+        console.error('Something went wrong:', error);
+    }
+});
