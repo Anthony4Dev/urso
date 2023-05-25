@@ -11,7 +11,7 @@ app.register(cors, {
 });
 
 app.post('/create', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { id, name, age, description, gender} = request.body as urso;
+    const { id, name, age, description, gender } = request.body as urso;
     const urso = await prisma.urso.create({
         data: {
             id,
@@ -41,6 +41,22 @@ app.get('/ursos/search', async (request: FastifyRequest, reply: FastifyReply) =>
             },
         });
         reply.send(ursos);
+    } catch (error) {
+        console.error('Something went wrong:', error);
+    }
+});
+
+app.put('/ursos/:name', async (request: FastifyRequest, reply: FastifyReply) => {
+    const { name } = request.params as { name: string };
+    const ursoData = request.body as Prisma.ursoUpdateInput;;
+
+    try {
+        const updatedUrso = await prisma.urso.updateMany({
+            where: { name: name },
+            data: ursoData,
+        });
+
+        reply.send('Urso updated!')
     } catch (error) {
         console.error('Something went wrong:', error);
     }
