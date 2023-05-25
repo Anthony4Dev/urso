@@ -61,3 +61,30 @@ app.put('/ursos/:name', async (request: FastifyRequest, reply: FastifyReply) => 
         console.error('Something went wrong:', error);
     }
 });
+
+app.delete('/ursos/:name', async (request: FastifyRequest, reply: FastifyReply) => {
+    const { name } = request.params as { name: string };
+
+    try {
+        const deletedUrso = await prisma.urso.deleteMany({
+            where: { name: name },
+        });
+
+        reply.send('Urso deleted.')
+
+    } catch (error) {
+        console.error('Something went wrong:', error);
+    }
+});
+
+const start = async () => {
+    try {
+        await app.listen({ port: 3333 });
+        console.log('Server listening at http://localhost:3333');
+    } catch (error) {
+        console.error('Something went wrong.');
+        process.exit(1);
+    }
+};
+
+start();
